@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ course_title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>{{ course_title }}</h1>
+        <div class="slideshow-container">
+            {% for slide in slides %}
+            <div class="slide">
+                <img src="{{ url_for('static', filename='../uploads/' + slide.image_filename) }}" style="width:100%">
+                <div class="text">{{ slide.description }}</div>
+            </div>
+            {% endfor %}
+
+            <a class="prev" id="prevBtn">&#10094;</a>
+            <a class="next" id="nextBtn">&#10095;</a>
+        </div>
+        <a href="/dashboard">一覧に戻る</a>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

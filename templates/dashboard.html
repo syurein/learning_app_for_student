@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>教材一覧</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>教材一覧</h1>
+        <ul>
+            {% for course in courses %}
+            <li><a href="{{ url_for('course', course_id=course.id) }}">{{ course.title }}</a></li>
+            {% endfor %}
+        </ul>
+        <a href="/logout">ログアウト</a>
+        {% if session.is_admin %}
+            <a href="/admin" class="admin-link">管理者ページへ</a>
+        {% endif %}
+    </div>
+</body>
+</html>
