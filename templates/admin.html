@@ -7,7 +7,9 @@
 </head>
 <body>
     <div class="container">
+    
         <h1>スライドアップロード</h1>
+        <p><a href="{{ url_for('manage_slides') }}">登録済みスライドの管理・削除ページへ →</a></p>
         <form method="post" enctype="multipart/form-data">
             <label for="course_id">コース:</label>
             <select name="course_id" id="course_id">

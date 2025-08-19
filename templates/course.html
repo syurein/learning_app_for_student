@@ -11,7 +11,7 @@
         <div class="slideshow-container">
             {% for slide in slides %}
             <div class="slide">
-                <img src="{{ url_for('static', filename='../uploads/' + slide.image_filename) }}" style="width:100%">
+                <img src="{{ url_for('static', filename='../static/uploads/' + slide.image_filename) }}" style="width:100%">
                 <div class="text">{{ slide.description }}</div>
             </div>
             {% endfor %}
