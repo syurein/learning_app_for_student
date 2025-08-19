@@ -140,5 +140,4 @@ def manage_slides():
     
     return render_template('manage_slides.html', slides_with_courses=slides_with_courses)
 
-app.run(debug=True,port=os.getenv('PORT', 5000))
-# --- JavaScriptのスライドショー機能 ---
+app.run(debug=True,port=int(os.getenv('PORT', 5000)))
