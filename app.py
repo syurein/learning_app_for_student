@@ -139,5 +139,5 @@ def manage_slides():
     slides_with_courses = db.session.query(Slide, Course).join(Course, Slide.course_id == Course.id).order_by(Course.title, Slide.order).all()
     
     return render_template('manage_slides.html', slides_with_courses=slides_with_courses)
-    
+
 app.run(debug=True,port=os.getenv('PORT', 5000))
