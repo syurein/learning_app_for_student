@@ -2,13 +2,18 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 import os
 
+
+
 # アプリの初期設定
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key' # 本番環境では複雑なキーに変更してください
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['UPLOAD_FOLDER'] = './static/uploads'
 db = SQLAlchemy(app)
+
+
+
 
 # --- データベースモデル定義 ---
 class User(db.Model):
@@ -26,6 +31,9 @@ class Slide(db.Model):
     image_filename = db.Column(db.String(120), nullable=False)
     description = db.Column(db.Text, nullable=False)
     order = db.Column(db.Integer, nullable=False)
+
+
+
 
 # --- ページごとの処理（ルーティング） ---
 
@@ -82,6 +90,7 @@ def admin():
     courses = Course.query.all()
     return render_template('admin.html', courses=courses)
 
+
 # ログアウト
 @app.route('/logout')
 def logout():
@@ -104,4 +113,31 @@ if __name__ == '__main__':
             course1 = Course(title='知的財産権入門')
             db.session.add(course1)
             db.session.commit()
-    app.run(debug=True)
+@app.route('/admin/manage', methods=['GET', 'POST'])
+def manage_slides():
+    # 管理者でなければダッシュボードへリダイレクト
+    if not session.get('is_admin'):
+        return redirect(url_for('dashboard'))
+
+    # 削除リクエスト（POST）があった場合の処理
+    if request.method == 'POST':
+        slide_id_to_delete = request.form.get('slide_id')
+        slide = Slide.query.get(slide_id_to_delete)
+        if slide:
+            # 1. 画像ファイルをサーバーから物理的に削除
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], slide.image_filename)
+            if os.path.exists(image_path):
+                os.remove(image_path)
+            
+            # 2. データベースからスライドの記録を削除
+            db.session.delete(slide)
+            db.session.commit()
+        return redirect(url_for('manage_slides'))
+
+    # 一覧表示（GET）の処理
+    # コース情報も併せて取得し、コース名と表示順で並び替え
+    slides_with_courses = db.session.query(Slide, Course).join(Course, Slide.course_id == Course.id).order_by(Course.title, Slide.order).all()
+    
+    return render_template('manage_slides.html', slides_with_courses=slides_with_courses)
+    
+app.run(debug=True,port=os.getenv('PORT', 5000))
