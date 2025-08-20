@@ -2,50 +2,48 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>スライド管理</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <style>
-        /* このページ専用のスタイル */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        td img { max-width: 150px; height: auto; }
-        .actions form { margin: 0; }
-        .actions button { background-color: #dc3545; padding: 5px 10px; font-size: 0.9em; }
-    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>登録済みスライドの管理</h1>
-        <a href="{{ url_for('admin') }}">← アップロードページに戻る</a>
+    <div class="container mt-5">
+        <h1 class="mb-4">登録済みスライドの管理</h1>
+        <div class="mb-4">
+            <a href="{{ url_for('admin') }}" class="btn btn-secondary">← 管理者トップに戻る</a>
+        </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>コース名</th>
-                    <th>表示順</th>
-                    <th>説明テキスト</th>
-                    <th>画像</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for slide, course in slides_with_courses %}
-                <tr>
-                    <td>{{ course.title }}</td>
-                    <td>{{ slide.order }}</td>
-                    <td>{{ slide.description }}</td>
-                    <td><img src="{{ url_for('static', filename='uploads/' + slide.image_filename) }}" alt="スライド画像"></td>
-                    <td class="actions">
-                        <form method="post" onsubmit="return confirm('このスライドを本当に削除しますか？');">
-                            <input type="hidden" name="slide_id" value="{{ slide.id }}">
-                            <button type="submit">削除</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>コース名</th>
+                        <th>表示順</th>
+                        <th>説明</th>
+                        <th>画像</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for slide, course in slides_with_courses %}
+                    <tr>
+                        <td>{{ course.title }}</td>
+                        <td>{{ slide.order }}</td>
+                        <td>{{ slide.description }}</td>
+                        <td><img src="{{ url_for('static', filename='uploads/' + slide.image_filename) }}" alt="スライド画像" class="img-thumbnail" style="max-width: 150px;"></td>
+                        <td>
+                            <form method="post" onsubmit="return confirm('このスライドを本当に削除しますか？');">
+                                <input type="hidden" name="slide_id" value="{{ slide.id }}">
+                                <button type="submit" class="btn btn-danger btn-sm">削除</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

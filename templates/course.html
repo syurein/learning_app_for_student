@@ -2,25 +2,60 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ course_title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <h1>{{ course_title }}</h1>
-        <div class="slideshow-container">
-            {% for slide in slides %}
-            <div class="slide">
-                <img src="{{ url_for('static', filename='../static/uploads/' + slide.image_filename) }}" style="width:100%">
-                <div class="text">{{ slide.description }}</div>
-            </div>
-            {% endfor %}
+    <div class="container mt-5">
+        <h1 class="mb-4">{{ course_title }}</h1>
 
-            <a class="prev" id="prevBtn">&#10094;</a>
-            <a class="next" id="nextBtn">&#10095;</a>
+        <div class="card">
+            <div class="card-body">
+                <div class="slideshow-container">
+                    {% for slide in slides %}
+                    <div class="slide">
+                        <img src="{{ url_for('static', filename='uploads/' + slide.image_filename) }}" class="img-fluid">
+                        <div class="text mt-3">{{ slide.description }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="slide-nav mt-4">
+                    <button class="btn btn-outline-primary" id="prevBtn">&#10094; 前へ</button>
+                    <button class="btn btn-outline-primary" id="nextBtn">次へ &#10095;</button>
+                </div>
+            </div>
         </div>
-        <a href="/dashboard">一覧に戻る</a>
+
+        <div class="footer-nav mt-4">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">一覧に戻る</a>
+        </div>
     </div>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    <script>
+        let slideIndex = 0;
+        showSlides(slideIndex);
+
+        function showSlides(n) {
+            let slides = document.getElementsByClassName("slide");
+            if (n >= slides.length) { slideIndex = 0; }
+            if (n < 0) { slideIndex = slides.length - 1; }
+            for (let i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";
+            }
+            slides[slideIndex].style.display = "block";
+        }
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            showSlides(slideIndex -= 1);
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            showSlides(slideIndex += 1);
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

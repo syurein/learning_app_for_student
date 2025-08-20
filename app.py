@@ -73,22 +73,45 @@ def admin():
         return redirect(url_for('dashboard'))
 
     if request.method == 'POST':
-        course_id = request.form['course_id']
-        description = request.form['description']
-        order = request.form['order']
-        file = request.files['image']
-        
-        if file:
-            filename = file.filename
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
+        # スライド追加の処理
+        if 'description' in request.form:
+            course_id = request.form['course_id']
+            description = request.form['description']
+            order = request.form['order']
+            file = request.files['image']
             
-            new_slide = Slide(course_id=course_id, image_filename=filename, description=description, order=order)
-            db.session.add(new_slide)
+            if file:
+                filename = file.filename
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(filepath)
+                
+                new_slide = Slide(course_id=course_id, image_filename=filename, description=description, order=order)
+                db.session.add(new_slide)
+                db.session.commit()
+        # コース追加の処理
+        elif 'course_title' in request.form:
+            course_title = request.form['course_title']
+            new_course = Course(title=course_title)
+            db.session.add(new_course)
             db.session.commit()
-    
+
     courses = Course.query.all()
     return render_template('admin.html', courses=courses)
+
+# コース削除
+@app.route('/admin/delete_course/<int:course_id>', methods=['POST'])
+def delete_course(course_id):
+    if not session.get('is_admin'):
+        return redirect(url_for('dashboard'))
+
+    course = Course.query.get(course_id)
+    if course:
+        # 関連するスライドも削除
+        Slide.query.filter_by(course_id=course_id).delete()
+        db.session.delete(course)
+        db.session.commit()
+    
+    return redirect(url_for('admin'))
 
 
 # ログアウト
